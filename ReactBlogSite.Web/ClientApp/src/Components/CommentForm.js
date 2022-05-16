@@ -1,0 +1,39 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+import { produce } from 'immer';
+
+const CommentForm = ({ postId }) => {
+    const [comment, setComment] = useState({
+        name: '',
+        content: ''
+    });
+
+    const { name, content } = comment;
+    const onSubmitClick = async () => {
+        await axios.post('/api/postcomment/addcomment', { name, content, postId });
+        setComment({ name: '', content: '' })
+    }
+
+    const onTextChange = (e) => {
+        const newComment = produce(comment, draft => {
+            draft[e.target.name] = e.target.value;
+        });
+        setComment(newComment);
+    }
+
+    return (
+        <div className='card' style={{ width: '35rem' }}>
+            <h5 className='card-header'>Leave a comment:</h5>
+            <div className='card-body'>
+                <div className='form-group'>
+                    <input type='text' placeholder='Please enter your name' onChange={onTextChange} className='form-control' name='name' value={name} />
+                </div>
+                <div className='form-group'>
+                    <textarea placeholder='Type comment here' onChange={onTextChange} name='content' value={content} className='form-control' rows='3' />
+                </div>
+                <button className='btn btn-primary' onClick={onSubmitClick}>Submit</button>
+            </div>
+        </div>
+    )
+}
+export default CommentForm;
